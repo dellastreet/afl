@@ -214,19 +214,18 @@ static u32 cpu_aff_main,	      /* Affinity for main process        */
            cpu_aff_child;             /* Affinity for fuzzed child        */
 
 #endif /* HAVE_AFFINITY */
-
+static struct sockaddr_storage N_server_addr; /* and server (send side)   */
+static socklen_t N_myaddrlen = sizeof (struct sockaddr_storage);
+                                      /* and length of both               */
 static FILE* plot_file;               /* Gnuplot output file              */
 
 /* Globals for network support */
 
-static struct addrinfo *N_results = NULL, /* for results from getaddrinfo() */
-                       *N_rp = NULL;      /* to iterate through N_results[] */
+static struct addrinfo *N_results = NULL, *N_rp = NULL;       /* for results from getaddrinfo() */ /* to iterate through N_results[] */
+
 
 static struct sockaddr_storage N_myaddr; /* to hold send port info        */
-static struct sockaddr_storage N_server_addr; /* and server (send side)   */
-static socklen_t N_myaddrlen = sizeof (struct sockaddr_storage);
                                       /* and length of both               */
-
 static u32 N_option_specified = 0;    /* 1 if a -N option is present      */
 static u8* N_option_string = 0;       /* points to copy of -N option str  */
 static u32 N_slen = 0;                /* length of the -N option string   */
@@ -234,7 +233,6 @@ static u32 N_valid = 0;               /* 1 if valid URL option to -N      */
 static u32 N_fuzz_client = 0;         /* 1 if target is a network client  */
 static u32 N_myaddr_valid = 0;        /* use established conn or addr     */
 static s32 N_fd;                      /* for network file descriptor      */
-
 static u32 N_timeout_given = 0;       /* use delay before network I/O     */
 static u32 N_exec_tmout = 0;          /* network I/O delay in msec        */
 static struct timespec N_it;          /* structure for nanosleep() call   */
@@ -2479,7 +2477,7 @@ EXP_ST void init_forkserver(char** argv) {
     dup2(dev_null_fd, 1);
     dup2(dev_null_fd, 2);
 
-    if (out_file || N_valid == 1) { /* no stdin for file or network input */
+    if (out_file) {
 
       dup2(dev_null_fd, 0);
 
@@ -2770,7 +2768,7 @@ static u8 run_target(char** argv) {
       dup2(dev_null_fd, 1);
       dup2(dev_null_fd, 2);
 
-      if (out_file || N_valid == 1) { /* no stdin for file or network input */
+      if (out_file) {
 
         dup2(dev_null_fd, 0);
 
