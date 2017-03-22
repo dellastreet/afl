@@ -49,9 +49,9 @@ namespace {
 
       bool runOnModule(Module &M) override;
 
-      const char *getPassName() const override {
-        return "American Fuzzy Lop Instrumentation";
-      }
+      // StringRef getPassName() const override {
+      //  return "American Fuzzy Lop Instrumentation";
+      // }
 
   };
 
@@ -100,7 +100,7 @@ bool AFLCoverage::runOnModule(Module &M) {
 
   GlobalVariable *AFLPrevLoc = new GlobalVariable(
       M, Int32Ty, false, GlobalValue::ExternalLinkage, 0, "__afl_prev_loc",
-      0, GlobalValue::GeneralDynamicTLSModel, 0, false);
+      0, GlobalVariable::GeneralDynamicTLSModel, 0, false);
 
   /* Instrument all the things! */
 
